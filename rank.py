@@ -789,6 +789,7 @@ def score_candidate(cand: dict) -> dict:
     )
 
     final = base * ca['progression_bonus'] * sk['power_bonus']
+    final = min(final, 1.0)
 
     return {
         'final_score':        round(final, 4),
