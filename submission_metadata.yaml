@@ -34,7 +34,7 @@ ai_usage_summary: |
   Used Gemini for coding assistance and debugging. Used Claude for architecture review and honeypot analysis. No candidate data was sent to external LLMs; all logic runs locally.
 
 methodology_summary: |
-  Rule-based multi-factor candidate ranker running in <20s on CPU. Blacklists 56 logically inconsistent honeypot candidates. Features tailored experience modeling (Gaussian-like curve centered around 7 years), title keyword matching, and a consulting company history penalty. Modifies rank scores using behavioral signals (notice period, last active date, recruiter response rate, and GitHub activity). Dynamically generates unique, fact-based, hallucination-free reasonings for the top 100 candidates.
+  Rule-based multi-factor candidate ranker with a Two-Stage architecture. Stage 1 processes 100K candidates in <20s on CPU using a 6-layer intelligence engine. It blacklists logically inconsistent honeypot candidates and models experience (Gaussian-like curve centered around 7 years) along with 23 behavioral signals. Stage 2 (Layer 7) takes the Top 1,000 candidates and performs true dense semantic similarity re-ranking using sentence-transformers (all-MiniLM-L6-v2). Dynamically generates unique, fact-based reasonings.
 
 declarations:
   read_submission_spec: true

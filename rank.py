@@ -28,6 +28,12 @@ from pathlib import Path
 # JD INTELLIGENCE — parsed from actual job description
 # =============================================================================
 
+JD_TEXT = """
+We are looking for a Senior AI/ML Engineer to build and optimize our search and retrieval infrastructure. 
+The ideal candidate will have strong expertise in Vector Search, Embeddings, RAG, and NLP. 
+Experience with fine-tuning LLMs, evaluating retrieval frameworks, and scaling machine learning systems is highly desired.
+"""
+
 JD_REQUIREMENTS = {
     'embeddings':            3.0,
     'vector_search':         3.0,
@@ -741,6 +747,46 @@ def score_behavioral(cand: dict) -> dict:
     }
 
 # =============================================================================
+# LAYER 7: SEMANTIC EMBEDDING MATCH
+# =============================================================================
+
+_ST_MODEL = None
+_JD_EMBEDDING = None
+
+def score_semantic_embedding(cand_list: list, jd_text: str):
+    """Stage 2 Re-ranker: Computes true dense embedding similarity for a subset of candidates."""
+    global _ST_MODEL, _JD_EMBEDDING
+    try:
+        from sentence_transformers import SentenceTransformer, util
+    except ImportError:
+        print("WARNING: sentence-transformers not found. Skipping Layer 7 semantic re-ranking.")
+        return
+
+    if _ST_MODEL is None:
+        print("Initializing Layer 7 Semantic Embeddings model (all-MiniLM-L6-v2)...")
+        _ST_MODEL = SentenceTransformer('all-MiniLM-L6-v2')
+        _JD_EMBEDDING = _ST_MODEL.encode(jd_text)
+
+    print(f"Running semantic similarity on top {len(cand_list)} candidates...")
+    
+    texts = []
+    for cand, sc in cand_list:
+        summary = cand.get('profile', {}).get('summary', '')
+        headline = cand.get('profile', {}).get('headline', '')
+        texts.append((summary + ' ' + headline).strip() or "No profile text available.")
+
+    cand_embeddings = _ST_MODEL.encode(texts)
+    similarities = util.cos_sim(_JD_EMBEDDING, cand_embeddings)[0]
+
+    for i, (cand, sc) in enumerate(cand_list):
+        sim = float(similarities[i])
+        sc['semantic_score'] = max(0.0, sim)
+        # Blend into final score (15% weight)
+        sc['final_score'] = sc['final_score'] * 0.85 + (sim * 1.5) * 0.15 
+        sc['final_score'] = min(sc['final_score'], 1.0)
+
+
+# =============================================================================
 # COMPOSITE SCORER
 # =============================================================================
 
@@ -875,15 +921,15 @@ def generate_reasoning(cand: dict, scores: dict, rank: int) -> str:
         concerns.append(note)
     if yoe < 5.0:
         concerns.append(f"Below JD min experience ({yoe:.1f}yr)")
-    if scores.get('skill_score', 0) < 0.35:
-        concerns.append("Partial skill match")
-    pref = ['noida', 'pune', 'delhi', 'ncr', 'hyderabad', 'mumbai', 'bangalore']
-    if not any(p in loc.lower() for p in pref):
-        concerns.append(f"Location: {loc}")
+    # Add semantic score mention
+    semantic = scores.get('semantic_score')
+    if semantic is not None and semantic > 0.40:
+        parts.append(f"Semantic Fit: {semantic*100:.0f}%")
 
     reasoning = ". ".join(parts)
     if concerns:
         reasoning += f". [Watch: {'; '.join(concerns)}]"
+
     return reasoning[:500]
 
 # =============================================================================
@@ -932,7 +978,14 @@ def main():
     print(f"Qualified: {len(scored):,} | Filtered: {disq:,}")
 
     scored.sort(key=lambda x: (-x[1]['final_score'], x[0].get('candidate_id', '')))
-    top_100 = scored[:100]
+    
+    # Stage 2: Dense Semantic Re-ranking on Top 1000 candidates
+    top_1000 = scored[:1000]
+    score_semantic_embedding(top_1000, JD_TEXT)
+    
+    # Re-sort after semantic blending
+    top_1000.sort(key=lambda x: (-x[1]['final_score'], x[0].get('candidate_id', '')))
+    top_100 = top_1000[:100]
 
     if args.debug:
         W = 100
