@@ -40,5 +40,3 @@ To see a detailed breakdown of the scoring per dimension for the top candidates,
 python rank.py --candidates ./project_statement/candidates.jsonl --out ./team_antigravity.csv --debug
 ```
 
-## 👥 Team
-- **B Soniya** - ML Engineer (soniyab2001@gmail.com)
