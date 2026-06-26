@@ -1,0 +1,44 @@
+# Redrob Hackathon — Submission Metadata
+team_name: "antigravity"
+
+primary_contact:
+  name: "B Soniya"
+  email: "soniyab2001@gmail.com"
+  phone: "+91-9876543210"
+
+team_members:
+  - name: "B Soniya"
+    email: "soniyab2001@gmail.com"
+    role: "ML Engineer"
+
+github_repo: "https://github.com/Soniya2001/ai-recruiter"
+sandbox_link: "https://huggingface.co/spaces/Soniya2001/redrob-ranker"
+reproduce_command: "python rank.py --candidates ./project_statement/candidates.jsonl --out ./team_antigravity.csv"
+
+compute:
+  platform: "Local Windows PC"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.11.5"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+ai_tools_used:
+  - "Gemini"
+  - "Claude"
+
+ai_usage_summary: |
+  Used Gemini for coding assistance and debugging. Used Claude for architecture review and honeypot analysis. No candidate data was sent to external LLMs; all logic runs locally.
+
+methodology_summary: |
+  Rule-based multi-factor candidate ranker running in <20s on CPU. Blacklists 56 logically inconsistent honeypot candidates. Features tailored experience modeling (Gaussian-like curve centered around 7 years), title keyword matching, and a consulting company history penalty. Modifies rank scores using behavioral signals (notice period, last active date, recruiter response rate, and GitHub activity). Dynamically generates unique, fact-based, hallucination-free reasonings for the top 100 candidates.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true

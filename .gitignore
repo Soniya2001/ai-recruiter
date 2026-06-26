@@ -1,0 +1,16 @@
+# Ignore large datasets and project statement files
+project_statement/
+
+# Ignore python caches and virtual envs
+__pycache__/
+*.pyc
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+
+# Ignore local scratch / log directories
+.system_generated/
+scratch/
+*.log
