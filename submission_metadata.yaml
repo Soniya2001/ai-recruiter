@@ -1,19 +1,22 @@
 # Redrob Hackathon — Submission Metadata
-team_name: "antigravity"
+team_name: "interviewee_ranking"
 
 primary_contact:
   name: "B Soniya"
-  email: "soniyab2001@gmail.com"
+  email: "bsoniya0309@gmail.com"
   phone: "+91-9876543210"
 
 team_members:
-  - name: "B Soniya"
-    email: "soniyab2001@gmail.com"
+  - name: "DHANALAKOTA JASWANTH KUMAR "
+    email: "jaswanthk993@gmail.com"
+    role: "ML Engineer"
+  - name: "NUNNAGUPPALA RUSHI VEERA SAI SURYA"
+    email: "rushiveerasaisurya@gmail.com"
     role: "ML Engineer"
 
 github_repo: "https://github.com/Soniya2001/ai-recruiter"
 sandbox_link: "https://huggingface.co/spaces/Soniya2001/redrob-ranker"
-reproduce_command: "python rank.py --candidates ./project_statement/candidates.jsonl --out ./team_antigravity.csv"
+reproduce_command: "python rank.py --candidates ./project_statement/candidates.jsonl --out ./interviewee_ranking.csv"
 
 compute:
   platform: "Local Windows PC"

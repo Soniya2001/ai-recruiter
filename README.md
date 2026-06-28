@@ -1,9 +1,9 @@
-# AI Recruiter - Team Antigravity
+# AI Recruiter - Interviewee Ranking
 
 [![Redrob Hackathon](https://img.shields.io/badge/Hackathon-Redrob-blue)](https://redrob.com)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-This repository contains Team Antigravity's submission for the Redrob Hackathon. It features a blazing-fast, 7-Layer Intelligence Engine designed to rank candidates based on nuanced job descriptions, semantic skill match, career trajectory, and behavioral signals.
+This repository contains Interviewee Ranking's submission for the Redrob Hackathon. It features a blazing-fast, 7-Layer Intelligence Engine designed to rank candidates based on nuanced job descriptions, semantic skill match, career trajectory, and behavioral signals.
 
 ## 🚀 The 7-Layer Intelligence Engine
 
@@ -37,11 +37,11 @@ git clone https://github.com/Soniya2001/ai-recruiter.git
 cd ai-recruiter
 
 # Run the 6-Layer Intelligence Engine
-python rank.py --candidates ./project_statement/candidates.jsonl --out ./team_antigravity.csv
+python rank.py --candidates ./project_statement/candidates.jsonl --out ./interviewee_ranking.csv
 ```
 
 To see a detailed breakdown of the scoring per dimension for the top candidates, you can use the `--debug` flag:
 ```bash
-python rank.py --candidates ./project_statement/candidates.jsonl --out ./team_antigravity.csv --debug
+python rank.py --candidates ./project_statement/candidates.jsonl --out ./interviewee_ranking.csv --debug
 ```
 
