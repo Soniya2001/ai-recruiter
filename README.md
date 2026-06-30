@@ -37,11 +37,11 @@ git clone https://github.com/Soniya2001/ai-recruiter.git
 cd ai-recruiter
 
 # Run the 6-Layer Intelligence Engine
-python rank.py --candidates ./project_statement/candidates.jsonl --out ./interviewee_ranking.csv
+python rank.py --candidates ./project_statement/candidates.jsonl --out ./ranked_output.csv
 ```
 
 To see a detailed breakdown of the scoring per dimension for the top candidates, you can use the `--debug` flag:
 ```bash
-python rank.py --candidates ./project_statement/candidates.jsonl --out ./interviewee_ranking.csv --debug
+python rank.py --candidates ./project_statement/candidates.jsonl --out ./ranked_output.csv --debug
 ```
 
