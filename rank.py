@@ -758,8 +758,8 @@ def score_semantic_embedding(cand_list: list, jd_text: str):
     global _ST_MODEL, _JD_EMBEDDING
     try:
         from sentence_transformers import SentenceTransformer, util
-    except ImportError:
-        print("WARNING: sentence-transformers not found. Skipping Layer 7 semantic re-ranking.")
+    except Exception as e:
+        print(f"WARNING: sentence-transformers not found or failed to load ({e}). Skipping Layer 7 semantic re-ranking.")
         return
 
     if _ST_MODEL is None:
@@ -783,7 +783,7 @@ def score_semantic_embedding(cand_list: list, jd_text: str):
         sc['semantic_score'] = max(0.0, sim)
         # Blend into final score (15% weight)
         sc['final_score'] = sc['final_score'] * 0.85 + (sim * 1.5) * 0.15 
-        sc['final_score'] = min(sc['final_score'], 1.0)
+        # Removed cap at 1.0 to allow differentiation
 
 
 # =============================================================================
@@ -835,7 +835,7 @@ def score_candidate(cand: dict) -> dict:
     )
 
     final = base * ca['progression_bonus'] * sk['power_bonus']
-    final = min(final, 1.0)
+    # Removed cap at 1.0 to allow differentiation
 
     return {
         'final_score':        round(final, 4),
@@ -983,7 +983,14 @@ def main():
     top_1000 = scored[:1000]
     score_semantic_embedding(top_1000, JD_TEXT)
     
-    # Re-sort after semantic blending
+    # Normalize scores to have a maximum of 0.999
+    max_score = max((sc['final_score'] for cand, sc in scored), default=1.0)
+    if max_score > 0:
+        scale = 0.999 / max_score
+        for cand, sc in scored:
+            sc['final_score'] *= scale
+
+    # Re-sort after semantic blending and normalization
     top_1000.sort(key=lambda x: (-x[1]['final_score'], x[0].get('candidate_id', '')))
     top_100 = top_1000[:100]
 
