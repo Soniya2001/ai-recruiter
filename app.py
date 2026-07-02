@@ -113,7 +113,8 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
             for cand, sc in scored:
                 sc['final_score'] *= scale
 
-        top_subset.sort(key=lambda x: (-x[1]['final_score'], x[0].get('candidate_id', '')))
+        # Re-sort all scored candidates since top_subset scores were modified
+        scored.sort(key=lambda x: (-x[1]['final_score'], x[0].get('candidate_id', '')))
         
         progress_bar.progress(100, text="Finalizing results...")
         
@@ -121,8 +122,8 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
         results = []
         detailed_data = []
         
-        # INCREASED TO 100 AS REQUESTED
-        for rank, (cand, sc) in enumerate(top_subset[:100], start=1):
+        # Process ALL candidates for the CSV download
+        for rank, (cand, sc) in enumerate(scored, start=1):
             reason = generate_reasoning(cand, sc, rank)
             cand_name = cand.get("profile", {}).get("anonymized_name", cand.get("candidate_id", "Unknown"))
             
@@ -132,7 +133,10 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
                 "Score": round(sc["final_score"], 4),
                 "Reason": reason
             })
-            detailed_data.append((cand, sc, reason))
+            
+            # Only keep detailed data for the top 100 to prevent the UI from freezing
+            if rank <= 100:
+                detailed_data.append((cand, sc, reason))
             
         df = pd.DataFrame(results)
         end_time = time.time()
