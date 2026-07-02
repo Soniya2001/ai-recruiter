@@ -124,7 +124,12 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
         
         # Process ALL candidates for the CSV download
         for rank, (cand, sc) in enumerate(scored, start=1):
-            reason = generate_reasoning(cand, sc, rank)
+            if rank <= 100:
+                reason = generate_reasoning(cand, sc, rank)
+                detailed_data.append((cand, sc, reason))
+            else:
+                reason = ""
+
             cand_name = cand.get("profile", {}).get("anonymized_name", cand.get("candidate_id", "Unknown"))
             
             results.append({
@@ -133,10 +138,6 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
                 "Score": round(sc["final_score"], 4),
                 "Reason": reason
             })
-            
-            # Only keep detailed data for the top 100 to prevent the UI from freezing
-            if rank <= 100:
-                detailed_data.append((cand, sc, reason))
             
         df = pd.DataFrame(results)
         end_time = time.time()
@@ -165,8 +166,9 @@ if st.session_state.get('has_results'):
     
     st.markdown("---")
     
-    # Show DataFrame
-    st.dataframe(st.session_state['df'], use_container_width=True)
+    # Show DataFrame (limit to Top 100 to avoid freezing the browser)
+    st.markdown("### Top 100 Candidates (Download CSV for full list)")
+    st.dataframe(st.session_state['df'].head(100), use_container_width=True)
     
     # 4. Download Results
     csv = st.session_state['df'].to_csv(index=False)
