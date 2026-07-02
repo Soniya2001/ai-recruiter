@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 import time
+import os
 from rank import score_candidate, score_semantic_embedding, generate_reasoning, JD_TEXT
 
 st.set_page_config(page_title="Redrob AI Recruiter", page_icon="👔", layout="wide")
@@ -74,11 +75,23 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
         except Exception as e:
             st.error(f"Failed to parse uploaded file: {e}")
     else:
-        try:
-            candidates = load_sample_candidates()
-            st.info("No file uploaded. Using sample_candidates.json as fallback.")
-        except Exception as e:
-            st.error(f"Failed to load sample candidates: {e}")
+        if os.path.exists("candidates.jsonl"):
+            try:
+                with open("candidates.jsonl", "r", encoding="utf-8") as f:
+                    for line in f:
+                        line_text = line.strip()
+                        if line_text:
+                            candidates.append(json.loads(line_text))
+                st.toast(f"Successfully loaded {len(candidates)} candidates from local candidates.jsonl.")
+                st.success(f"Using pre-uploaded candidates.jsonl ({len(candidates)} candidates)")
+            except Exception as e:
+                st.error(f"Failed to load local candidates.jsonl: {e}")
+        else:
+            try:
+                candidates = load_sample_candidates()
+                st.info("No file uploaded. Using sample_candidates.json as fallback.")
+            except Exception as e:
+                st.error(f"Failed to load sample candidates: {e}")
             
     if candidates:
         # 6. Progress Bar
