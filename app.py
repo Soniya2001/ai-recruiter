@@ -75,17 +75,26 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
         except Exception as e:
             st.error(f"Failed to parse uploaded file: {e}")
     else:
-        if os.path.exists("candidates.jsonl"):
+        found_file = None
+        for f_name in ["candidates.jsonl", "candidate.jsonl", "candidates.json", "candidate.json"]:
+            if os.path.exists(f_name):
+                found_file = f_name
+                break
+                
+        if found_file:
             try:
-                with open("candidates.jsonl", "r", encoding="utf-8") as f:
-                    for line in f:
-                        line_text = line.strip()
-                        if line_text:
-                            candidates.append(json.loads(line_text))
-                st.toast(f"Successfully loaded {len(candidates)} candidates from local candidates.jsonl.")
-                st.success(f"Using pre-uploaded candidates.jsonl ({len(candidates)} candidates)")
+                with open(found_file, "r", encoding="utf-8") as f:
+                    if found_file.endswith(".jsonl"):
+                        for line in f:
+                            line_text = line.strip()
+                            if line_text:
+                                candidates.append(json.loads(line_text))
+                    else:
+                        candidates = json.load(f)
+                st.toast(f"Successfully loaded {len(candidates)} candidates from local {found_file}.")
+                st.success(f"Using pre-uploaded {found_file} ({len(candidates)} candidates)")
             except Exception as e:
-                st.error(f"Failed to load local candidates.jsonl: {e}")
+                st.error(f"Failed to load local {found_file}: {e}")
         else:
             try:
                 candidates = load_sample_candidates()
