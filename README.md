@@ -1,3 +1,12 @@
+---
+title: AI Recruiter
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+app_file: app.py
+pinned: false
+---
 # AI Recruiter - Interviewee Ranking
 
 [![Redrob Hackathon](https://img.shields.io/badge/Hackathon-Redrob-blue)](https://redrob.com)
