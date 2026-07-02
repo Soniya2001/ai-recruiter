@@ -103,7 +103,7 @@ if st.button("Run Ranking", type="primary", use_container_width=True):
         
         # Semantic Re-ranking
         progress_bar.progress(85, text="Running semantic re-ranking on top candidates...")
-        top_subset = scored[:100]
+        top_subset = scored[:1000]
         score_semantic_embedding(top_subset, jd_input)
         
         # Normalize scores to have a maximum of 0.999
